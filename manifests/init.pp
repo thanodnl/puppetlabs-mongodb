@@ -31,6 +31,7 @@
 #
 class mongodb (
   $enable_10gen    = false,
+  $version         = latest,
   $init            = $mongodb::params::init,
   $location        = '',
   $packagename     = undef,
@@ -60,7 +61,8 @@ class mongodb (
   $slave           = undef,
   $only            = undef,
   $master          = undef,
-  $source          = undef
+  $source          = undef,
+  $mongosource     = undef
 ) inherits mongodb::params {
 
   if $enable_10gen {
@@ -78,10 +80,10 @@ class mongodb (
 
   package { 'mongodb-10gen':
     name   => $package,
-    ensure => installed,
+    ensure => $version,
   }
 
-  file { '/etc/mongod.conf':
+  file { '/etc/mongodb.conf':
     content => template('mongodb/mongod.conf.erb'),
     owner   => 'root',
     group   => 'root',
@@ -93,6 +95,6 @@ class mongodb (
     name      => $servicename,
     ensure    => running,
     enable    => true,
-    subscribe => File['/etc/mongod.conf'],
+    subscribe => File['/etc/mongodb.conf'],
   }
 }
